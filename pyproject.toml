@@ -1,0 +1,41 @@
+[build-system]
+requires = ["poetry-core", "poetry-dynamic-versioning"]
+build-backend = "poetry_dynamic_versioning.backend"
+
+[project]
+name = "arc_evals"
+authors = [{ name = "RyanSaxe", email = "ryancsaxe+1@gmail.com" }]
+readme = "README.md"
+dynamic = ["version", "description"]
+classifiers = [
+  "Development Status :: 2 - Pre-Alpha",
+  "Intended Audience :: Developers",
+  "Natural Language :: English",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+]
+
+[tool.black]
+line-length = 120
+target-version = ['py311']
+
+[tool.isort]
+profile = "black"
+
+[tool.poetry]
+name = "arc_evals"
+version = "0.0.1"
+description = ""
+authors = ["RyanSaxe <ryancsaxe+1@gmail.com>"]
+
+[[tool.poetry.source]]
+name = "PyPI"
+priority = "primary"
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.12"
+dash = "^2.16.1"
+numpy = "^1.26.4"
+anthropic = "^0.21.3"
+dash-bootstrap-components = "^1.5.0"
