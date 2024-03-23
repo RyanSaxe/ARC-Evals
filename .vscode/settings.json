@@ -1,0 +1,44 @@
+{
+    "python.terminal.activateEnvironment": true,
+    "editor.detectIndentation": true,
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true,
+    "editor.formatOnSave": true,
+    "files.insertFinalNewline": true,
+    "flake8.importStrategy": "fromEnvironment",
+    "mypy.editor.codeActionsOnSave": {
+        "source.organizeImports": "explicit"
+    },
+    "python.languageServer": "Pylance",
+    "[python]": {
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "explicit"
+        },
+        "editor.defaultFormatter": "ms-python.black-formatter"
+    },
+    "python.testing.pytestEnabled": false,
+    "python.testing.unittestEnabled": false,
+    "python.testing.autoTestDiscoverOnSaveEnabled": false,
+    "python.testing.pytestArgs": [
+        "tests"
+    ],
+    "editor.rulers": [
+        {
+            "column": 80,
+            "color": "#9f8761"
+        },
+        {
+            "column": 100,
+            "color": "#9f8761"
+        }
+    ],
+    "python.analysis.autoImportCompletions": true,
+    "python.analysis.completeFunctionParens": false,
+    "python.analysis.diagnosticMode": "workspace",
+    "python.analysis.inlayHints.functionReturnTypes": true,
+    "python.analysis.inlayHints.variableTypes": true,
+    "python.analysis.inlayHints.callArgumentNames": "partial",
+    "python.analysis.autoFormatStrings": true,
+    "python.analysis.typeCheckingMode": "basic",
+    "python.terminal.activateEnvInCurrentTerminal": true,
+}
