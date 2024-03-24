@@ -6,9 +6,6 @@
     "editor.formatOnSave": true,
     "files.insertFinalNewline": true,
     "flake8.importStrategy": "fromEnvironment",
-    "mypy.editor.codeActionsOnSave": {
-        "source.organizeImports": "explicit"
-    },
     "python.languageServer": "Pylance",
     "[python]": {
         "editor.codeActionsOnSave": {
@@ -24,11 +21,11 @@
     ],
     "editor.rulers": [
         {
-            "column": 80,
+            "column": 100,
             "color": "#9f8761"
         },
         {
-            "column": 100,
+            "column": 120,
             "color": "#9f8761"
         }
     ],

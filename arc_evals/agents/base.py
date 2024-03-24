@@ -42,4 +42,4 @@ class Agent(abc.ABC):
 
     def evaluate(self, answer: list[list[int]], prediction: list[list[int]]) -> dict[str, float]:
         answer, prediction = np.asarray(answer), np.asarray(prediction)
-        return {"cell_accuracy": np.average(answer == prediction)}
+        return {"cell_accuracy": 1 - np.average(answer == prediction)}
