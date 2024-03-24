@@ -86,7 +86,6 @@ def build_json_cards(eval_folder):
                     header,
                     dbc.CardBody(
                         metric_viz,
-                        # style={"background-color": "rgba(0,255,0,0.2)"},
                     ),
                     footer,
                 ],
