@@ -1,1 +1,1 @@
-{"status": "success", "cell_accuracy": 0.0}
+{"status": "success", "metrics": [{"cell_accuracy_all": 1.0, "cell_accuracy_0": 1.0, "cell_accuracy_1": 1.0}, {"cell_accuracy_all": 1.0, "cell_accuracy_0": 1.0, "cell_accuracy_1": 1.0}, {"cell_accuracy_all": 1.0, "cell_accuracy_0": 1.0, "cell_accuracy_1": 1.0}], "predictions": [[[1, 0, 1], [0, 1, 0], [0, 0, 0]], [[1, 0, 1], [0, 1, 0], [1, 0, 0]], [[1, 0, 1], [0, 1, 0], [1, 0, 1]]]}

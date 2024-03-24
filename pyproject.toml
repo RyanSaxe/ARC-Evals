@@ -46,6 +46,7 @@ flake8-builtins = "^2.2.0"
 flake8-expression-complexity = "^0.0.11"
 flake8-pyproject = "^1.2.3"
 python-dotenv = "^1.0.1"
+tiktoken = "^0.6.0"
 
 [tool.flake8]
 ignore = [
