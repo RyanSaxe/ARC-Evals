@@ -1,21 +1,39 @@
-.fail_eval {
-    box-shadow: inset 0 0 10px #C00;
+.hover-pop {
+    opacity: 0.8;
+    transition: 0.5s ease;
 }
 
-.bad_eval {
-    box-shadow: inset 0 0 10px #C50;
+.btn-gradient:hover {
+    opacity: 1.0;
+    transition: 0.5s ease;
 }
 
-.okay_eval {
-    box-shadow: inset 0 0 10px #CC0;
+.eval {
+    border-style: solid;
+    border: solid 1px black;
+    outline: solid 3px black;
+    height: 16px;
+    width: 16px;
 }
 
-.good_eval {
-    box-shadow: inset 0 0 10px #8C0;
+.eval.fail {
+    outline-color: #C00;
 }
 
-.perf_eval {
-    box-shadow: inset 0 0 10px #0C0;
+.eval.bad {
+    outline-color: #C50;
+}
+
+.eval.okay {
+    outline-color: #CC0;
+}
+
+.eval.good {
+    outline-color: #8C0;
+}
+
+.eval.perf {
+    outline-color: #0C0;
 }
 
 

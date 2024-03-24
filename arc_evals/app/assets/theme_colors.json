@@ -1,0 +1,106 @@
+{
+    "BOOTSTRAP": {
+        "danger": "#dc3545",
+        "success": "#28a745"
+    },
+    "CERULEAN": {
+        "danger": "#E74C3C",
+        "success": "#18BC9C"
+    },
+    "COSMO": {
+        "danger": "#E74C3C",
+        "success": "#18BC9C"
+    },
+    "CYBORG": {
+        "danger": "#E74C3C",
+        "success": "#2ECC71"
+    },
+    "DARKLY": {
+        "danger": "#E74C3C",
+        "success": "#00BC8C"
+    },
+    "FLATLY": {
+        "danger": "#E74C3C",
+        "success": "#18BC9C"
+    },
+    "JOURNAL": {
+        "danger": "#EB6864",
+        "success": "#22B24C"
+    },
+    "LITERA": {
+        "danger": "#dc3545",
+        "success": "#28a745"
+    },
+    "LUMEN": {
+        "danger": "#E74C3C",
+        "success": "#2ECC71"
+    },
+    "LUX": {
+        "danger": "#E74C3C",
+        "success": "#18BC9C"
+    },
+    "MATERIA": {
+        "danger": "#f44336",
+        "success": "#4caf50"
+    },
+    "MINTY": {
+        "danger": "#ee6e73",
+        "success": "#78c2ad"
+    },
+    "MORPH": {
+        "danger": "#e64141",
+        "success": "#37b349"
+    },
+    "PULSE": {
+        "danger": "#e74c3c",
+        "success": "#27ae60"
+    },
+    "QUARTZ": {
+        "danger": "#d9534f",
+        "success": "#5cb85c"
+    },
+    "SANDSTONE": {
+        "danger": "#c0392b",
+        "success": "#27ae60"
+    },
+    "SIMPLEX": {
+        "danger": "#d9534f",
+        "success": "#5cb85c"
+    },
+    "SKETCHY": {
+        "danger": "#d9534f",
+        "success": "#5cb85c"
+    },
+    "SLATE": {
+        "danger": "#ee6f6d",
+        "success": "#62c462"
+    },
+    "SOLAR": {
+        "danger": "#dc3545",
+        "success": "#28a745"
+    },
+    "SPACELAB": {
+        "danger": "#d9534f",
+        "success": "#5cb85c"
+    },
+    "SUPERHERO": {
+        "danger": "#d9534f",
+        "success": "#5cb85c"
+    },
+    "UNITED": {
+        "danger": "#d9534f",
+        "success": "#5cb85c"
+    },
+    "VAPOR": {
+        "danger": "#df4759",
+        "success": "#4bbf73"
+    },
+    "YETI": {
+        "danger": "#d9534f",
+        "success": "#5cb85c"
+    },
+    "ZEPHYR": {
+        "danger": "#d9534f",
+        "success": "#5cb85c"
+    }
+}

@@ -7,25 +7,10 @@ import dash_bootstrap_components as dbc
 
 from arc_evals.utils import paths
 
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.MATERIA])
-
-
-def gradient_button(value, status, json_id, eval_folder):
-    if status == "failure":
-        return dbc.Button(
-            "Inspect Task",
-            id={"type": "task-button", "task": json_id, "eval": eval_folder},
-            color="danger",
-            size="sm",
-        )
-    percentage = value * 100
-    gradient_style = {"background": f"linear-gradient(90deg, green {percentage}%, red {percentage}%)"}
-    return dbc.Button(
-        "Inspect Task",
-        id={"type": "task-button", "task": json_id, "eval": eval_folder},
-        style=gradient_style,
-        size="sm",
-    )
+THEME = "MATERIA"
+with open(Path(__file__).parent / "assets/theme_colors.json", "r") as f:
+    THEME_COLORS = json.load(f)[THEME]
+app = dash.Dash(__name__, external_stylesheets=[getattr(dbc.themes, THEME), dbc.icons.FONT_AWESOME])
 
 
 def load(data_dir: Path, sample_f: str):
@@ -41,7 +26,7 @@ n_cols = 6
 
 def build_json_cards(eval_folder):
     eval_dir = paths.OUTPUT / eval_folder
-    json_files = os.listdir(eval_dir)
+    json_files = [f for f in os.listdir(eval_dir) if f.endswith(".json")]
     json_cards = []
 
     for i, json_file in enumerate(json_files):
@@ -62,33 +47,38 @@ def build_json_cards(eval_folder):
                     continue
                 class_name_background = f"symbol_{name}"
                 if value <= 0.0:
-                    class_name_shadow = "fail_eval"
+                    class_name_border = "fail"
                 elif value <= 0.4:
-                    class_name_shadow = "bad_eval"
+                    class_name_border = "bad"
                 elif value <= 0.6:
-                    class_name_shadow = "okay_eval"
+                    class_name_border = "okay"
                 elif value < 1.0:
-                    class_name_shadow = "good_eval"
+                    class_name_border = "good"
                 else:
-                    class_name_shadow = "perfect_eval"
-                class_name = f"{class_name_background} {class_name_shadow}"
+                    class_name_border = "perf"
+                class_name = f"eval {class_name_background} {class_name_border}"
                 cols = [
                     dbc.Col(
                         dbc.Card(
-                            style={
-                                "height": "20px",
-                                "width": "20px",
-                            },
                             className=class_name,
                         ),
-                        className="m-1",
+                        className="me-2 my-2",
                         width=1,
                     )
-                ] * 6
+                ]
                 metric_viz.children += cols
             metric_rows.append(metric_viz)
-        task_button = gradient_button(button_value, status, json_id, eval_folder)
-        header = dbc.CardHeader(task_button)
+        task_link = dbc.CardLink(json_id, href="#", id={"type": "task-link", "task": json_id, "eval": eval_folder})
+
+        header = dbc.CardHeader([task_link])
+        if status == "failure":
+            warning_icon = dash.html.I(className="fas fa-exclamation-triangle text-warning float-end mt-1")
+            header.children.append(warning_icon)
+        footer = dbc.CardFooter(
+            style={
+                "background": f"linear-gradient(90deg, {THEME_COLORS['success']} {button_value * 100}%, {THEME_COLORS['danger']} {button_value * 100}%)"
+            },
+        )
 
         col = dbc.Col(
             dbc.Card(
@@ -98,6 +88,7 @@ def build_json_cards(eval_folder):
                         metric_viz,
                         # style={"background-color": "rgba(0,255,0,0.2)"},
                     ),
+                    footer,
                 ],
                 className="my-2",
             ),
@@ -111,6 +102,8 @@ def build_json_cards(eval_folder):
 all_evals = os.listdir(paths.OUTPUT)
 tabs = []
 for eval_folder in all_evals:
+    if eval_folder[0] == ".":
+        continue
     json_cards = build_json_cards(eval_folder)
     eval_tab = dbc.Tab(json_cards, label=eval_folder)
     tabs.append(eval_tab)
