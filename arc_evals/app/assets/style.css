@@ -6,6 +6,10 @@
     cursor: pointer;
 }
 
+.task-graph {
+    height: 200px;
+}
+
 .eval {
     border-style: solid;
     border: solid 1px black;

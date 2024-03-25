@@ -45,7 +45,10 @@ def create_grid(grid_data: list[list[int]]):
     for i in range(height):
         fig.add_shape(type="line", x0=-0.5, y0=i + 0.5, x1=width - 0.5, y1=i + 0.5, line=dict(color="white", width=1))
     fig.update_layout(
-        margin=dict(l=0, r=0, t=0, b=0), xaxis=dict(showticklabels=False), yaxis=dict(showticklabels=False)
+        hovermode=False,
+        margin=dict(l=0, r=0, t=0, b=0),
+        xaxis=dict(showticklabels=False),
+        yaxis=dict(showticklabels=False),
     )
     return fig
 
@@ -59,16 +62,34 @@ def create_grids_from_data(samples: list[dict[str, list[list[int]]]], prediction
     for i, sample in enumerate(samples):
         in_fig = dcc.Graph(
             figure=create_grid(sample["input"]),
-            config={"displayModeBar": False},
+            config={
+                "displayModeBar": False,
+                "staticPlot": True,  # Disable zooming and other interactions
+                "doubleClick": "reset",  # Disable double-click to zoom
+                "showTips": False,  # Disable tooltips
+            },
+            className="task-graph",
         )
         out_fig = dcc.Graph(
             figure=create_grid(sample["output"]),
-            config={"displayModeBar": False},
+            config={
+                "displayModeBar": False,
+                "staticPlot": True,  # Disable zooming and other interactions
+                "doubleClick": "reset",  # Disable double-click to zoom
+                "showTips": False,  # Disable tooltips
+            },
+            className="task-graph",
         )
         if predictions is not None:
             pred_fig = dcc.Graph(
                 figure=create_grid(predictions[i]),
-                config={"displayModeBar": False},
+                config={
+                    "displayModeBar": False,
+                    "staticPlot": True,  # Disable zooming and other interactions
+                    "doubleClick": "reset",  # Disable double-click to zoom
+                    "showTips": False,  # Disable tooltips
+                },
+                className="task-graph",
             )
             figs = [in_fig, pred_fig, out_fig]
         else:
@@ -95,13 +116,8 @@ def create_grids_from_data(samples: list[dict[str, list[list[int]]]], prediction
 
 task_modal = dbc.Modal(
     [
-        dbc.ModalHeader("HEADER HERE"),
+        dbc.ModalHeader(),
         dbc.ModalBody(children=[], id="modal-task-body"),
-        dbc.ModalFooter(
-            [
-                dbc.Button("Submit", id="submit-task-data", n_clicks=0, size="sm"),
-            ]
-        ),
     ],
     id="modal-task",
     is_open=False,
