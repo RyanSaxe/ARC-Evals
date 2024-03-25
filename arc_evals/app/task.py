@@ -51,75 +51,79 @@ def create_grid(grid_data: list[list[int]]):
         xaxis=dict(showticklabels=False),
         yaxis=dict(showticklabels=False),
     )
-    return fig
+    return dcc.Graph(
+        figure=fig,
+        config={
+            "displayModeBar": False,
+            "staticPlot": True,  # Disable zooming and other interactions
+            "doubleClick": "reset",  # Disable double-click to zoom
+            "showTips": False,  # Disable tooltips
+        },
+        className="task-graph",
+    )
 
 
-def create_grids_from_data(
-    samples: list[dict[str, list[list[int]]]], predictions=None, n: int = 1, json_id=None, eval_folder=None
-):
-    count = 2 if predictions is None else 3
-    inner_col_w = 12 // count
-    outer_col_w = 12 // n
+def create_grid_card(figs):
+    col_w = 12 // len(figs)
+    return dbc.Card(
+        dbc.CardBody(
+            dbc.Row(
+                [dbc.Col(fig, md=col_w) for fig in figs],
+            )
+        ),
+        className="mb-4",
+    )
+
+
+def create_training_grids(samples: list[dict[str, list[list[int]]]], n: int = 3):
+    col_w = 12 // n
     rows = []
     cards = []
     for i, sample in enumerate(samples):
-        in_fig = dcc.Graph(
-            figure=create_grid(sample["input"]),
-            config={
-                "displayModeBar": False,
-                "staticPlot": True,  # Disable zooming and other interactions
-                "doubleClick": "reset",  # Disable double-click to zoom
-                "showTips": False,  # Disable tooltips
-            },
-            className="task-graph",
-        )
-        out_fig = dcc.Graph(
-            figure=create_grid(sample["output"]),
-            config={
-                "displayModeBar": False,
-                "staticPlot": True,  # Disable zooming and other interactions
-                "doubleClick": "reset",  # Disable double-click to zoom
-                "showTips": False,  # Disable tooltips
-            },
-            className="task-graph",
-        )
-        if predictions is not None:
-            pred_fig = dcc.Graph(
-                figure=create_grid(predictions[i]),
-                config={
-                    "displayModeBar": False,
-                    "staticPlot": True,  # Disable zooming and other interactions
-                    "doubleClick": "reset",  # Disable double-click to zoom
-                    "showTips": False,  # Disable tooltips
-                },
-                className="task-graph",
-            )
-            figs = [in_fig, pred_fig, out_fig]
-        else:
-            figs = [in_fig, out_fig]
-        cards.append(
-            dbc.Card(
-                dbc.CardBody(
-                    dbc.Row(
-                        [dbc.Col(fig, md=inner_col_w) for fig in figs],
-                    )
-                ),
-                className="mb-4",
-            )
-        )
-        if predictions is not None:
-            cards.append(create_claude_chat(json_id, eval_folder))
+        in_fig = create_grid(sample["input"])
+        out_fig = create_grid(sample["output"])
+        figs = [in_fig, out_fig]
+        cards.append(create_grid_card(figs))
         if len(cards) % n == 0 or i == len(samples) - 1:
-            row = dbc.Row([dbc.Col(card, md=outer_col_w) for card in cards])
+            row = dbc.Row([dbc.Col(card, md=col_w) for card in cards])
             rows.append(row)
             cards = []
     return dbc.Container(rows, style={"padding-left": "0px", "padding-right": "0px"})
 
 
+def create_evaluation_grids(
+    samples: list[dict[str, list[list[int]]]],
+    json_id: str,
+    eval_folder: str,
+    predictions: list[list[list[int]]] | None = None,
+):
+    rows = []
+    for i, sample in enumerate(samples):
+        in_fig = create_grid(sample["input"])
+        out_fig = create_grid(sample["output"])
+        if predictions is not None:
+            pred_fig = create_grid(predictions[i])
+            figs = [in_fig, pred_fig, out_fig]
+        else:
+            figs = [in_fig, out_fig]
+        card = create_grid_card(figs)
+        row = dbc.Row(dbc.Col(card, md=12))
+        rows.append(row)
+    grid_container = dbc.Container(rows, style={"padding-left": "0px", "padding-right": "0px"})
+    chat_card = create_claude_chat(json_id, eval_folder)
+    chat_container = dbc.Container(
+        dbc.Row(dbc.Col(chat_card, md=12)), style={"padding-left": "0px", "padding-right": "0px"}
+    )
+    return dbc.Container(
+        dbc.Row(children=[dbc.Col(grid_container, md=6), dbc.Col(chat_container, md=6)]),
+        style={"padding-left": "0px", "padding-right": "0px"},
+    )
+
+
 task_modal = dbc.Modal(
     [
-        dbc.ModalHeader(),
-        dbc.ModalBody(children=[], id="modal-task-body"),
+        dbc.ModalHeader(id="modal-task-header"),
+        dbc.ModalBody(children=[create_claude_chat("", "")], id="modal-task-body"),
     ],
     id="modal-task",
     is_open=False,
@@ -128,7 +132,7 @@ task_modal = dbc.Modal(
 
 
 @callback(
-    Output("modal-task-body", "children"),
+    [Output("modal-task-body", "children"), Output("modal-task-header", "children")],
     Input({"type": "task-link", "task": ALL, "eval": ALL}, "n_clicks"),
     prevent_initial_call=True,
 )
@@ -139,15 +143,15 @@ def create_task_figs(_):
     eval_folder = triggered_id_dict["eval"]
     data = paths.load(paths.TRAINING, json_id)
     output = paths.load(paths.OUTPUT / eval_folder, json_id)
-    left_plots = create_grids_from_data(data["train"], n=3)
-    right_plots = create_grids_from_data(
-        samples=data["test"], n=2, predictions=output["predictions"], json_id=json_id, eval_folder=eval_folder
+    left_plots = create_training_grids(data["train"])
+    right_plots = create_evaluation_grids(
+        samples=data["test"], predictions=output["predictions"], json_id=json_id, eval_folder=eval_folder
     )
     output = dbc.Tabs(
         [dbc.Tab(left_plots, label="Train Examples"), dbc.Tab(right_plots, label="Evaluation")],
         style={"padding-left": "10px;"},
     )
-    return dbc.Container(output)
+    return dbc.Container(output), [json_id]
 
 
 @callback(

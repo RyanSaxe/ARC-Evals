@@ -2,6 +2,10 @@
     --bs-modal-width: 95%;
 }
 
+.nav-tabs {
+    margin-bottom: 15px;
+}
+
 .task-card-link {
     cursor: pointer;
 }

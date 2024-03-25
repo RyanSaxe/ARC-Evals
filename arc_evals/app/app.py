@@ -4,7 +4,6 @@ from pathlib import Path
 
 import dash
 import dash_bootstrap_components as dbc
-from dash import ALL, Input, Output, State, callback, callback_context, dcc
 
 from arc_evals.utils import paths
 
@@ -39,6 +38,8 @@ def build_json_cards(eval_folder):
                     button_value = value
                     continue
                 class_name_background = f"symbol_{name}"
+                if status == "failure":
+                    class_name_border = "fail"
                 if value <= 0.0:
                     class_name_border = "fail"
                 elif value <= 0.4:

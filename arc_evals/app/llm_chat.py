@@ -9,49 +9,48 @@ def create_claude_chat(json_id, eval_folder):
     return dbc.Card(
         dbc.CardBody(
             [
-                dcc.Store(id={"type": "chat-history", "task": json_id, "eval": eval_folder}, data=[]),
-                dcc.Store(id={"type": "trigger-llm", "task": json_id, "eval": eval_folder}, data=[0]),
+                dcc.Store(id="current-task", data=dict(json_id=json_id, eval_folder=eval_folder)),
+                dcc.Store(id="chat-history", data=[]),
+                dcc.Store(id="trigger-llm", data=[0]),
                 dbc.Row(
-                    [
-                        dbc.Col(
-                            dbc.Textarea(
-                                id={"type": "user-input", "task": json_id, "eval": eval_folder},
-                                placeholder="Ask Claude anything ...",
-                                className="form-control",
-                                debounce=True,
-                            ),
-                            width=9,
+                    dbc.Col(
+                        dbc.InputGroup(
+                            [
+                                dbc.Textarea(
+                                    id="user-input",
+                                    placeholder="Ask Claude anything ...",
+                                    # className="form-control",
+                                    debounce=True,
+                                ),
+                                dbc.Button(
+                                    children=[
+                                        html.P(
+                                            " Ask",
+                                            id="button-history-label",
+                                        ),
+                                        dbc.Spinner(
+                                            id="llm-spinner",
+                                            spinner_style={"display": "none"},
+                                        ),
+                                    ],
+                                    id="button-history",
+                                ),
+                            ],
                         ),
-                        dbc.Col(
-                            dbc.Button(
-                                children=[
-                                    html.P(
-                                        "Clear",
-                                        id="clear-history-label",
-                                    ),
-                                    dbc.Spinner(
-                                        id="llm-spinner",
-                                        spinner_style={"display": "none"},
-                                    ),
-                                ],
-                                id="clear-history",
-                            ),
-                            width=3,
-                        ),
-                    ]
+                    )
                 ),
                 dbc.Row(
                     dbc.Col(
                         children=[],
-                        id={"type": "shown-history", "task": json_id, "eval": eval_folder},
+                        id="shown-history",
                         className="mt-4",
-                        style={"max-height": "300px", "overflowY": "auto"},
+                        style={"max-height": "320px", "overflowY": "auto"},
                     )
                 ),
             ]
         ),
         className="mb-4",
-        style={"min-height": "200px"},
+        style={"min-height": "232px"},
     )
 
 
@@ -71,28 +70,16 @@ def query_claude(history):
 
 @callback(
     [
-        Output({"type": "chat-history", "task": MATCH, "eval": MATCH}, "data", allow_duplicate=True),
-        Output({"type": "shown-history", "task": MATCH, "eval": MATCH}, "children", allow_duplicate=True),
+        Output("chat-history", "data", allow_duplicate=True),
+        Output("shown-history", "children", allow_duplicate=True),
+        Output("trigger-llm", "data"),
+        Output("user-input", "value"),
     ],
-    Input({"type": "clear-history", "task": MATCH, "eval": MATCH}, "n_clicks"),
+    [Input("user-input", "n_submit"), Input("button-history", "n_clicks")],
+    State("user-input", "value"),
     prevent_initial_call=True,
 )
-def clear_history(_):
-    return [], []
-
-
-@callback(
-    [
-        Output({"type": "chat-history", "task": MATCH, "eval": MATCH}, "data", allow_duplicate=True),
-        Output({"type": "shown-history", "task": MATCH, "eval": MATCH}, "children", allow_duplicate=True),
-        Output({"type": "trigger-llm", "task": MATCH, "eval": MATCH}, "data"),
-        Output({"type": "user-input", "task": MATCH, "eval": MATCH}, "value"),
-    ],
-    Input({"type": "user-input", "task": MATCH, "eval": MATCH}, "n_submit"),
-    State({"type": "user-input", "task": MATCH, "eval": MATCH}, "value"),
-    prevent_initial_call=True,
-)
-def add_to_chat_history(_, value):
+def add_to_chat_history(n_submits, n_clicks, value):
     history = Patch()
     history.append(value)
     chat = Patch()
@@ -105,16 +92,16 @@ def add_to_chat_history(_, value):
 
 @callback(
     [
-        Output({"type": "shown-history", "task": MATCH, "eval": MATCH}, "children", allow_duplicate=True),
-        Output({"type": "chat-history", "task": MATCH, "eval": MATCH}, "data", allow_duplicate=True),
+        Output("shown-history", "children", allow_duplicate=True),
+        Output("chat-history", "data", allow_duplicate=True),
     ],
-    Input({"type": "trigger-llm", "task": MATCH, "eval": MATCH}, "data"),
-    State({"type": "chat-history", "task": MATCH, "eval": MATCH}, "data"),
+    Input("trigger-llm", "data"),
+    State("chat-history", "data"),
     prevent_initial_call=True,
     running=[
-        (Output("clear-history", "disabled"), True, False),
+        (Output("button-history", "disabled"), True, False),
         (
-            Output("clear-history-label", "style"),
+            Output("button-history-label", "style"),
             {"display": "none"},
             {"display": "block"},
         ),
