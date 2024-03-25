@@ -5,6 +5,7 @@ import dash_bootstrap_components as dbc
 import plotly.graph_objects as go
 from dash import ALL, Input, Output, State, callback, callback_context, dcc
 
+from arc_evals.app.llm_chat import create_claude_chat
 from arc_evals.utils import paths
 
 COLOR_MAP = [
@@ -53,7 +54,9 @@ def create_grid(grid_data: list[list[int]]):
     return fig
 
 
-def create_grids_from_data(samples: list[dict[str, list[list[int]]]], predictions=None, n: int = 1):
+def create_grids_from_data(
+    samples: list[dict[str, list[list[int]]]], predictions=None, n: int = 1, json_id=None, eval_folder=None
+):
     count = 2 if predictions is None else 3
     inner_col_w = 12 // count
     outer_col_w = 12 // n
@@ -105,8 +108,7 @@ def create_grids_from_data(samples: list[dict[str, list[list[int]]]], prediction
             )
         )
         if predictions is not None:
-            # in this case, we should add a chat interface with claude
-            ...
+            cards.append(create_claude_chat(json_id, eval_folder))
         if len(cards) % n == 0 or i == len(samples) - 1:
             row = dbc.Row([dbc.Col(card, md=outer_col_w) for card in cards])
             rows.append(row)
@@ -138,7 +140,9 @@ def create_task_figs(_):
     data = paths.load(paths.TRAINING, json_id)
     output = paths.load(paths.OUTPUT / eval_folder, json_id)
     left_plots = create_grids_from_data(data["train"], n=3)
-    right_plots = create_grids_from_data(samples=data["test"], n=2, predictions=output["predictions"])
+    right_plots = create_grids_from_data(
+        samples=data["test"], n=2, predictions=output["predictions"], json_id=json_id, eval_folder=eval_folder
+    )
     output = dbc.Tabs(
         [dbc.Tab(left_plots, label="Train Examples"), dbc.Tab(right_plots, label="Evaluation")],
         style={"padding-left": "10px;"},
