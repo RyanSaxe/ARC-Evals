@@ -1,11 +1,9 @@
-.hover-pop {
-    opacity: 0.8;
-    transition: 0.5s ease;
+.modal-xl {
+    --bs-modal-width: 98%;
 }
 
-.btn-gradient:hover {
-    opacity: 1.0;
-    transition: 0.5s ease;
+.task-card-link {
+    cursor: pointer;
 }
 
 .eval {

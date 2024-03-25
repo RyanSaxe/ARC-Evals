@@ -4,6 +4,7 @@ from pathlib import Path
 
 import dash
 import dash_bootstrap_components as dbc
+from dash import ALL, Input, Output, State, callback, callback_context, dcc
 
 from arc_evals.utils import paths
 
@@ -11,14 +12,6 @@ THEME = "MATERIA"
 with open(Path(__file__).parent / "assets/theme_colors.json", "r") as f:
     THEME_COLORS = json.load(f)[THEME]
 app = dash.Dash(__name__, external_stylesheets=[getattr(dbc.themes, THEME), dbc.icons.FONT_AWESOME])
-
-
-def load(data_dir: Path, sample_f: str):
-    if not sample_f.endswith(".json"):
-        sample_f = f"{sample_f}.json"
-    with open(data_dir / sample_f, "r") as f:
-        data = json.load(f)
-    return data
 
 
 n_cols = 6
@@ -33,7 +26,7 @@ def build_json_cards(eval_folder):
         json_id = json_file.split(".")[0]
         if i % n_cols == 0:
             json_cards.append(dbc.Row(children=[]))
-        result = load(eval_dir, json_file)
+        result = paths.load(eval_dir, json_file)
         status = result["status"]
         metrics = result.get("metrics", [])
         button_value = 0.0
@@ -68,7 +61,9 @@ def build_json_cards(eval_folder):
                 ]
                 metric_viz.children += cols
             metric_rows.append(metric_viz)
-        task_link = dbc.CardLink(json_id, href="#", id={"type": "task-link", "task": json_id, "eval": eval_folder})
+        task_link = dbc.CardLink(
+            json_id, id={"type": "task-link", "task": json_id, "eval": eval_folder}, className="task-card-link"
+        )
 
         header = dbc.CardHeader([task_link])
         if status == "failure":
@@ -107,7 +102,10 @@ for eval_folder in all_evals:
     eval_tab = dbc.Tab(json_cards, label=eval_folder)
     tabs.append(eval_tab)
 
-app.layout = dbc.Container(dbc.Tabs(tabs))
+from arc_evals.app.task import task_modal
+
+app.layout = dbc.Container([task_modal, dbc.Tabs(tabs, id="eval-tabs")])
+
 
 if __name__ == "__main__":
     app.run_server(debug=True)
