@@ -135,5 +135,4 @@ def update_chat_history(_, history, current_task_data):
     format_response = format_message(response, person=False)
     chat = Patch()
     chat.prepend(format_response)
-    time.sleep(2)
     return chat, history

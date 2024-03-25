@@ -96,9 +96,8 @@ class ClaudeAgent(Agent):
     @property
     def system_format(self):
         return (
-            "Remember to take your time, think critically, "
-            "and respond with just the correct 2D grid and no explanation. "
-            "Please solve the following problem:\n\n"
+            "Remember to think critically and leverage all the information from each <input> <output> paire. "
+            "Respond with just the correct 2D grid and no explanation for the following problem:\n\n"
         )
 
     def convert_message_to_grid(self, message):
@@ -161,4 +160,4 @@ if __name__ == "__main__":
     args = sys.argv[1:]
     stop_after = int(args[0]) if len(args) > 0 else None
     agent = ClaudeAgent()
-    run_agent(agent, "claude_fix", OUTPUT, TRAINING, limit=stop_after)
+    run_agent(agent, "claude", OUTPUT, TRAINING, limit=stop_after, overwrite=False)
