@@ -7,28 +7,42 @@ from pathlib import Path
 import numpy as np
 
 
-class Agent(abc.ABC):
-    def __init__(self, data_path: Path | str, eval_path: Path | str, name: str, overwrite: bool = False):
-        self.data_path = Path(data_path)
-        self.name = name
-        if overwrite:
-            self.eval_path = Path(eval_path) / self.name
-        else:
-            i = 1
-            while self.name in os.listdir(eval_path):
-                i += 1
-                self.name = f"{name}_{i}"
-            self.eval_path = Path(eval_path) / self.name
-        self.eval_path.mkdir(parents=True, exist_ok=True)
+def create_eval_dir(eval_path: Path | str, name: str, overwrite: bool = False) -> Path:
+    name = name
+    if overwrite:
+        eval_path = Path(eval_path) / name
+    else:
+        i = 1
+        while name in os.listdir(eval_path):
+            i += 1
+            name = f"{name}_{i}"
+        eval_path = Path(eval_path) / name
+    eval_path.mkdir(parents=True, exist_ok=True)
+    return eval_path
 
-    def __call__(self, json_filename: str) -> None:
+
+def run_agent(agent, name, eval_path, data_path, overwrite=False, limit=None):
+    eval_path = create_eval_dir(eval_path, name, overwrite=overwrite)
+    json_files = [f for f in os.listdir(data_path) if f.endswith(".json")]
+    for i, json_filename in enumerate(json_files):
+        with open(data_path / json_filename, "r") as f:
+            data = json.load(f)
+        metrics = agent(data)
+        with open(eval_path / json_filename, "w") as f:
+            json.dump(metrics, f)
+        if limit is not None and (limit - 1) <= i:
+            break
+
+
+# TODO: separate out responsibility in this call with respect to metrics to support compositionality
+
+
+class Agent(abc.ABC):
+
+    def __call__(self, data: dict) -> dict:
         predictions = None
-        if not json_filename.endswith(".json"):
-            json_filename = f"{json_filename}.json"
         output_metrics = {"status": "success"}
         try:
-            with open(self.data_path / json_filename, "r") as f:
-                data = json.load(f)
             predictions = self.call(data)
             metrics = [
                 self.evaluate(answer["output"], prediction) for answer, prediction in zip(data["test"], predictions)
@@ -41,8 +55,7 @@ class Agent(abc.ABC):
             output_metrics["traceback"] = str(e)
             # if the error happens during metric calculation, we still want access to prediction
             output_metrics["predictions"] = predictions
-        with open(self.eval_path / json_filename, "w") as f:
-            json.dump(output_metrics, f)
+        return output_metrics
 
     @abc.abstractmethod
     def call(self, data: dict) -> list[list[list[int]]]: ...

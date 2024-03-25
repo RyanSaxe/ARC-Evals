@@ -7,7 +7,7 @@ import dash_bootstrap_components as dbc
 
 from arc_evals.utils import paths
 
-THEME = "MATERIA"
+THEME = "ZEPHYR"
 with open(Path(__file__).parent / "assets/theme_colors.json", "r") as f:
     THEME_COLORS = json.load(f)[THEME]
 app = dash.Dash(__name__, external_stylesheets=[getattr(dbc.themes, THEME), dbc.icons.FONT_AWESOME])
@@ -63,7 +63,10 @@ def build_json_cards(eval_folder):
                 metric_viz.children += cols
             metric_rows.append(metric_viz)
         task_link = dbc.CardLink(
-            json_id, id={"type": "task-link", "task": json_id, "eval": eval_folder}, className="task-card-link"
+            json_id,
+            # href=f"#{eval_folder}-{json_id}",
+            id={"type": "task-link", "task": json_id, "eval": eval_folder},
+            className="task-card-link",
         )
 
         header = dbc.CardHeader([task_link])
@@ -80,9 +83,7 @@ def build_json_cards(eval_folder):
             dbc.Card(
                 [
                     header,
-                    dbc.CardBody(
-                        metric_viz,
-                    ),
+                    dbc.CardBody(metric_viz, className="metric-body"),
                     footer,
                 ],
                 className="my-2",
@@ -100,12 +101,23 @@ for eval_folder in all_evals:
     if eval_folder[0] == ".":
         continue
     json_cards = build_json_cards(eval_folder)
-    eval_tab = dbc.Tab(json_cards, label=eval_folder)
+    eval_tab = dbc.Tab(
+        json_cards,
+        label=eval_folder,
+    )
     tabs.append(eval_tab)
 
 from arc_evals.app.task import task_modal
 
-app.layout = dbc.Container([task_modal, dbc.Tabs(tabs, id="eval-tabs")])
+app.layout = dbc.Container(
+    [
+        task_modal,
+        dbc.Tabs(
+            tabs,
+            id="eval-tabs",
+        ),
+    ]
+)
 
 
 if __name__ == "__main__":

@@ -1,7 +1,5 @@
-import os
-from pathlib import Path
-
-from arc_evals.agents.base import Agent
+from arc_evals.agents.base import Agent, run_agent
+from arc_evals.utils.paths import OUTPUT, TRAINING
 
 
 class TestAgent(Agent):
@@ -11,10 +9,6 @@ class TestAgent(Agent):
         return [answer["output"] for answer in data["test"]]
 
 
-EVAL_PATH = Path(__file__).parent.parent.parent / "evals"
-DATA_PATH = Path(__file__).parent.parent.parent / "data/training"
-
 if __name__ == "__main__":
-    agent = TestAgent(DATA_PATH, EVAL_PATH, "cheater", overwrite=True)
-    for i, json_filename in enumerate(os.listdir(DATA_PATH)):
-        agent(json_filename)
+    agent = TestAgent()
+    run_agent(agent, "cheater", OUTPUT, TRAINING, overwrite=True)

@@ -122,7 +122,6 @@ def create_evaluation_grids(
 
 task_modal = dbc.Modal(
     [
-        dbc.ModalHeader(id="modal-task-header"),
         dbc.ModalBody(children=[create_claude_chat("", "")], id="modal-task-body"),
     ],
     id="modal-task",
@@ -132,7 +131,7 @@ task_modal = dbc.Modal(
 
 
 @callback(
-    [Output("modal-task-body", "children"), Output("modal-task-header", "children")],
+    Output("modal-task-body", "children"),
     Input({"type": "task-link", "task": ALL, "eval": ALL}, "n_clicks"),
     prevent_initial_call=True,
 )
@@ -151,7 +150,7 @@ def create_task_figs(_):
         [dbc.Tab(left_plots, label="Train Examples"), dbc.Tab(right_plots, label="Evaluation")],
         style={"padding-left": "10px;"},
     )
-    return dbc.Container(output), [json_id]
+    return dbc.Container(output)
 
 
 @callback(

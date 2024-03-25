@@ -1,8 +1,14 @@
+import json
 import time
 
 import dash
 import dash_bootstrap_components as dbc
 from dash import MATCH, Input, Output, Patch, State, callback, dcc, html
+
+from arc_evals.agents.claude_agent import ClaudeAgent
+from arc_evals.utils.paths import OUTPUT, TRAINING
+
+AGENT = ClaudeAgent(temperature=0.3, max_tokens=1024)
 
 
 def create_claude_chat(json_id, eval_folder):
@@ -21,6 +27,7 @@ def create_claude_chat(json_id, eval_folder):
                                     placeholder="Ask Claude anything ...",
                                     # className="form-control",
                                     debounce=True,
+                                    size="sm",
                                 ),
                                 dbc.Button(
                                     children=[
@@ -58,14 +65,19 @@ def format_message(message, person=True):
     formatted_input = message.split("\n")
     alert = dbc.Alert(
         children=[html.Hr() if sentence.strip() == "" else html.P(sentence) for sentence in formatted_input],
-        color="secondary" if person else "primary",
+        color="light" if person else "primary",
         className="user-message" if person else "bot-message",
     )
     return dbc.Row(dbc.Col(alert))
 
 
-def query_claude(history):
-    return "\n\n".join(history)
+# NOTE: could add caching on this loaded data for efficiency
+def query_claude(history, json_id, eval_folder):
+    with open(OUTPUT / eval_folder / f"{json_id}.json", "r") as f:
+        predictions = json.load(f)["predictions"]
+    with open(TRAINING / f"{json_id}.json", "r") as f:
+        data = json.load(f)
+    return AGENT.chat(data, history, predictions)
 
 
 @callback(
@@ -84,7 +96,7 @@ def add_to_chat_history(n_submits, n_clicks, value):
     history.append(value)
     chat = Patch()
     person_response = format_message(value)
-    chat.append(person_response)
+    chat.prepend(person_response)
     trigger_llm = Patch()
     trigger_llm[0] += 1
     return history, chat, trigger_llm, ""
@@ -96,7 +108,7 @@ def add_to_chat_history(n_submits, n_clicks, value):
         Output("chat-history", "data", allow_duplicate=True),
     ],
     Input("trigger-llm", "data"),
-    State("chat-history", "data"),
+    [State("chat-history", "data"), State("current-task", "data")],
     prevent_initial_call=True,
     running=[
         (Output("button-history", "disabled"), True, False),
@@ -112,15 +124,16 @@ def add_to_chat_history(n_submits, n_clicks, value):
         ),
     ],
 )
-def update_chat_history(_, history):
+def update_chat_history(_, history, current_task_data):
     if history is None or len(history) == 0:
         return [], []
 
-    response = query_claude(history)
+    json_id, eval_folder = current_task_data["json_id"], current_task_data["eval_folder"]
+    response = query_claude(history, json_id, eval_folder)
     history = Patch()
     history.append(response)
     format_response = format_message(response, person=False)
     chat = Patch()
-    chat.append(format_response)
+    chat.prepend(format_response)
     time.sleep(2)
     return chat, history
