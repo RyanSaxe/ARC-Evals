@@ -1,6 +1,6 @@
 # ARC-Evals
 
-This repository is a lightweight tool for experimenting and evaluating approaches to [https://github.com/fchollet/ARC](The Abstraction and Reasoning Corpus) (ARC).
+This repository is a lightweight tool for experimenting and evaluating approaches to [The Abstraction and Reasoning Corpus (ARC)](https://github.com/fchollet/ARC/).
 
 ARC is evaluated such that perfect performance is required (if you get one cell wrong, you get the question wrong). Because of this, designing tools for quickly iterating on approaches as well as metrics, evaluations, and visualizations are crucial to success in this problem space.
 
@@ -9,7 +9,7 @@ ARC is evaluated such that perfect performance is required (if you get one cell 
 ## Installing the project
 
 1. `>>> git clone [this repo]`
-2. Install [https://python-poetry.org/](poetry)
+2. Install [poetry](https://python-poetry.org/)
 3. Create a virtualenv with python >= 3.11
 4. `>>> poetry install`
 
