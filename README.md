@@ -1,6 +1,6 @@
 # ARC-Evals
 
-This repository is a lightweight tool for experimenting and evaluating approaches to [https://github.com/fchollet/ARC](The Abstraction and Reasoning Corpus (ARC)).
+This repository is a lightweight tool for experimenting and evaluating approaches to [https://github.com/fchollet/ARC](The Abstraction and Reasoning Corpus) (ARC).
 
 ARC is evaluated such that perfect performance is required (if you get one cell wrong, you get the question wrong). Because of this, designing tools for quickly iterating on approaches as well as metrics, evaluations, and visualizations are crucial to success in this problem space.
 
@@ -19,7 +19,7 @@ ARC is evaluated such that perfect performance is required (if you get one cell 
 
 This will open a page that looks like this:
 
-<img alt="Home Page" src="https://github.com/RyanSaxe/ARC-Evals/imgs/home_page.png">
+<img alt="Home Page" src="imgs/home_page.png">
 
 Each tab corresponds to a different model. The "Cheater" model is a testing model that is allowed to look at the correct answer, so if this doesn't show 100% performance, there is a bug. The "Claude" models are results from using Claude Opus to try and make predictions.
 
@@ -27,9 +27,11 @@ Each card contains a visual representation of the evaluation metrics. The bottom
 
 If you click on the link of a card, it will open something that lets you explore the training examples.
 
-<img alt="Training Examples" src="https://github.com/RyanSaxe/ARC-Evals/imgs/train_examples.png">
+<img alt="Training Examples" src="imgs/train_examples.png">
 
 And if you click on the "Evaluation" tab, it will show you, in order, the test input, the predicted output, and the correct output. Additionally there is a chat interface with Claude Opus that has all of the grids in context such that you can ask questions about them.
+
+<img alt="Evaluation" src="imgs/eval_claude.png">
 
 ## Creating Evaluations for an Agent
 
@@ -63,3 +65,4 @@ if __name__ == "__main__":
 2. Clean up initial page of the UI. It's a bit too much at the moment
 3. Make it easy to compare model predictions across agents, within context for claude chat
 4. Create a `TrainAgent` base class that has necessary infrastructure for training ML models
+5. Fix bug where if an Agent execution fails, the color-based metrics get marked as passing in the UI
