@@ -66,3 +66,4 @@ if __name__ == "__main__":
 3. Make it easy to compare model predictions across agents, within context for claude chat
 4. Create a `TrainAgent` base class that has necessary infrastructure for training ML models
 5. Fix bug where if an Agent execution fails, the color-based metrics get marked as passing in the UI
+6. Build a basic ML model and a large suite of metrics.
